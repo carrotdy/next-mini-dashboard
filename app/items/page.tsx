@@ -1,29 +1,17 @@
-'use client'
+import { PageContainer } from "@/app/components/layout/PageContainer";
+import { TopNav } from "@/app/components/layout/TopNav";
+import { KpiGrid } from "@/app/components/dashboard/KpiGrid";
+import { RecentRecordsTable } from "@/app/components/dashboard/RecentRecordsTable";
+import { demoKpis, demoRecords } from "@/app/lib/demo";
 
-import { useState } from "react";
-
-export default function Page() {
-  const [text, setText] = useState("");
-
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setText(event.target.value);
-  }
-
+const DashboardPage = () => {
   return (
-    <div>
-      <label>
-        Text input:
-        <input
-          className="bg-orange-200"
-          name="myInput"
-          onChange={onChange}
-          value={text}
-        />
-      </label>
-      <div>
-        <b>값: </b>
-        {text}
-      </div>
-    </div>
+    <PageContainer>
+      <TopNav title="대시보드" />
+      <KpiGrid kpis={demoKpis} />
+      <RecentRecordsTable records={demoRecords} />
+    </PageContainer>
   );
-}
+};
+
+export default DashboardPage;

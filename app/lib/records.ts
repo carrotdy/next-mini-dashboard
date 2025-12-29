@@ -38,3 +38,19 @@ export const records: HealthRecord[] = [
     { id: "p1", date: "2026-01-07", category: "panic", title: "Panic", value: 1, note: "Mild, 5min" },
     { id: "p2", date: "2026-01-10", category: "panic", title: "Panic", value: 1, note: "Short, breathing helped" },
 ];
+
+export type DemoKpi = {
+  label: string;
+  category: RecordCategory;
+  valueText: string;
+  subText: string;
+};
+
+export type DemoRecord = {
+  id: string;
+  date: string;
+  category: RecordCategory;
+  title: string;
+  valueText: string;
+  note?: string;
+};
