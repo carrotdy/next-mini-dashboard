@@ -1,7 +1,7 @@
-import type { DemoKpi } from "@/app/lib/records";
 import { KpiCard } from "@/app/components/dashboard/KpiCard";
+import { kpis } from "@/app/page";
 
-export const KpiGrid = ({ kpis }: { kpis: DemoKpi[] }) => {
+export const KpiGrid = () => {
   return (
     <section>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">

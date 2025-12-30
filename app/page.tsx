@@ -2,9 +2,9 @@ import { buildDashboardKpis } from "@/app/features/dashboard/kpi";
 import { records } from "@/app/lib/records";
 import Link from "next/link";
 
-export default function Home() {
-  const kpis = buildDashboardKpis(records, 7);
+export const kpis = buildDashboardKpis(records, 7);
 
+export default function Home() {
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2">

@@ -9,11 +9,13 @@ export type DashboardKpi = {
 
 const parseDate = (date: string) => new Date(`${date}T00:00:00`);
 
+//steps, sleep 가장 최신기록
 const getLatestByCategory = (all: HealthRecord[], category: RecordCategory) =>
   all
     .filter((r) => r.category === category)
     .sort((a, b) => parseDate(b.date).getTime() - parseDate(a.date).getTime())[0];
 
+//mood, panic 데이터 중 최근 7일
 const getLastNDays = (all: HealthRecord[], days: number) => {
   if (all.length === 0) return [];
 
@@ -40,16 +42,20 @@ export const buildDashboardKpis = (
   records: HealthRecord[],
   days: number = 7
 ): DashboardKpi[] => {
-  const lastN = getLastNDays(records, days);
-
   const latestSteps = getLatestByCategory(records, "steps")?.value ?? null;
   const latestSleep = getLatestByCategory(records, "sleep")?.value ?? null;
 
-  const moodAvg = average(
-    lastN.filter((r) => r.category === "mood").map((r) => r.value)
+  const moodLastN = getLastNDays(
+    records.filter((r) => r.category === "mood"),
+    days
+  );
+  const panicLastN = getLastNDays(
+    records.filter((r) => r.category === "panic"),
+    days
   );
 
-  const panicCount = lastN.filter((r) => r.category === "panic").length;
+  const moodAvg = average(moodLastN.map((r) => r.value));
+  const panicCount = panicLastN.length;
 
   return [
     {
@@ -61,13 +67,13 @@ export const buildDashboardKpis = (
     {
       label: "Sleep",
       category: "sleep",
-      valueText: latestSleep === null ? "--" : `${latestSleep}h`,
+      valueText: latestSleep === null ? "--" : `${latestSleep.toFixed(0)}h`,
       subText: "latest",
     },
     {
       label: "Mood",
       category: "mood",
-      valueText: moodAvg === null ? "--" : moodAvg.toFixed(1),
+      valueText: moodAvg === null ? "--" : moodAvg.toFixed(0),
       subText: `avg (${days}d)`,
     },
     {
