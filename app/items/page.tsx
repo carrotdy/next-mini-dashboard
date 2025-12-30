@@ -1,16 +1,13 @@
-import { KpiGrid } from "@/app/components/dashboard/KpiGrid";
-import { RecentRecordsTable } from "@/app/components/dashboard/RecentRecordsTable";
 import { PageContainer } from "@/app/components/layout/PageContainer";
 import { TopNav } from "@/app/components/layout/TopNav";
 
-const DashboardPage = () => {
+const ItemsPage = () => {
   return (
     <PageContainer>
-      <TopNav title="대시보드" />
-      <KpiGrid />
-      <RecentRecordsTable />
+      <TopNav title="기록" />
+
     </PageContainer>
   );
 };
 
-export default DashboardPage;
+export default ItemsPage;

@@ -1,23 +1,24 @@
+import { categoryLabel, type HealthRecord } from "@/app/lib/records";
 import Link from "next/link";
-import { categoryLabel, records, type DemoRecord, type HealthRecord } from "@/app/lib/records";
 
-export const RecentRecordsTable = () => {
+const formatValueText = (value: HealthRecord) => {
+  switch (value.category) {
+    case 'steps':
+      return `${value.value.toLocaleString()}걸음`;
+    case 'sleep':
+      return `${value.value.toFixed(0)}시간`
+    case 'mood':
+      return `${value.value.toFixed(0)}점`
+    case 'panic':
+      return `${value.value}회`
+  }
+}
+
+export const RecentRecordsTable = ({ records }: { records: HealthRecord[] }) => {
 
   const parseDate = (d: string) => new Date(`${d}T00:00:00`).getTime();
   const sortedRecords = [...records].sort((a, b) => parseDate(b.date) - parseDate(a.date));
-
-  const formatValueText = (value: HealthRecord) => {
-    switch (value.category) {
-      case 'steps':
-        return `${value.value.toLocaleString()}걸음`;
-      case 'sleep':
-        return `${value.value.toFixed(0)}시간`
-      case 'mood':
-        return `${value.value.toFixed(0)}점`
-      case 'panic':
-        return `${value.value}회`
-    }
-  }
+  const recent = sortedRecords.slice(0, 10);
 
   return (
     <section className="mt-10">
@@ -37,7 +38,7 @@ export const RecentRecordsTable = () => {
           <div className="col-span-3">메모</div>
         </div>
 
-        {sortedRecords.map((r, index) => (
+        {recent.map((r, index) => (
           <div
             key={r.id}
             className="grid grid-cols-12 px-4 py-3 text-sm hover:bg-zinc-50"

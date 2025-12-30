@@ -8,13 +8,6 @@ export const TopNav = ({ title }: { title: string }) => {
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="hidden md:block">
-          <input
-            placeholder="검색..."
-            className="w-72 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-300"
-          />
-        </div>
-
         <Link
           href="/"
           className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50"

@@ -1,25 +1,21 @@
-import { buildDashboardKpis } from "@/app/features/dashboard/kpi";
+import { PageContainer } from "@/app/components/layout/PageContainer";
+import { TopNav } from "@/app/components/layout/TopNav";
+import { KpiGrid } from "@/app/components/dashboard/KpiGrid";
+import { RecentRecordsTable } from "@/app/components/dashboard/RecentRecordsTable";
+import { buildDashboardKpis, getRecentRecords } from "@/app/features/dashboard/kpi";
 import { records } from "@/app/lib/records";
-import Link from "next/link";
 
-export const kpis = buildDashboardKpis(records, 7);
+const DashboardPage = () => {
+  const kpis = buildDashboardKpis(records, 7);
+  const recent10 = getRecentRecords(records, 10);
 
-export default function Home() {
   return (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-2">
-        {kpis.map((kpi) => (
-          <Link
-            key={kpi.category}
-            href={`/items?category=${kpi.category}`}
-            className="rounded-lg border p-6 hover:shadow"
-          >
-            <div className="text-sm opacity-70">{kpi.label}</div>
-            <div className="mt-2 text-3xl font-semibold">{kpi.valueText}</div>
-            <div className="mt-2 text-xs opacity-60">{kpi.subText}</div>
-          </Link>
-        ))}
-      </div>
-    </div>
+    <PageContainer>
+      <TopNav title="대시보드" />
+      <KpiGrid kpis={kpis} />
+      <RecentRecordsTable records={recent10} />
+    </PageContainer>
   );
-}
+};
+
+export default DashboardPage;

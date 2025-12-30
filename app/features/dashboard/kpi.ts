@@ -7,6 +7,14 @@ export type DashboardKpi = {
   subText: string;
 };
 
+//최근 10개 기록
+const parseDateMs = (date: string) => new Date(`${date}T00:00:00`).getTime();
+
+export const getRecentRecords = (all: HealthRecord[], limit = 10) =>
+  [...all]
+    .sort((a, b) => parseDateMs(b.date) - parseDateMs(a.date))
+    .slice(0, limit);
+
 const parseDate = (date: string) => new Date(`${date}T00:00:00`);
 
 //steps, sleep 가장 최신기록
