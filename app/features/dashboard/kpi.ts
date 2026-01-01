@@ -67,28 +67,28 @@ export const buildDashboardKpis = (
 
   return [
     {
-      label: "Steps",
+      label: "걸음수",
       category: "steps",
       valueText: latestSteps === null ? "--" : latestSteps.toLocaleString(),
-      subText: "latest",
+      subText: "최근 기록",
     },
     {
-      label: "Sleep",
+      label: "수면",
       category: "sleep",
       valueText: latestSleep === null ? "--" : `${latestSleep.toFixed(0)}h`,
-      subText: "latest",
+      subText: "최근 기록",
     },
     {
-      label: "Mood",
+      label: "기분",
       category: "mood",
       valueText: moodAvg === null ? "--" : moodAvg.toFixed(0),
-      subText: `avg (${days}d)`,
+      subText: `평균 (${days}일)`,
     },
     {
-      label: "Panic",
+      label: "공황",
       category: "panic",
       valueText: `${panicCount}`,
-      subText: `events (${days}d)`,
+      subText: `발생 (${days}일)`,
     },
   ];
 };
