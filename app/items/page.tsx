@@ -113,6 +113,7 @@ const ItemsPage = ({ searchParams }: { searchParams: SearchParams }) => {
           <RecordsTable
             rows={pageRows.map((r, idx) => ({
               key: `${r.id}-${r.date}-${idx}`,
+              id: r.id,
               date: r.date,
               category: r.category,
               categoryText: categoryLabel[r.category],
