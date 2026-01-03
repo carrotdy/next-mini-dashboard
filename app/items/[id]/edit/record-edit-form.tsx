@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { updateRecord } from "@/app/action";
 import {
   categoryLabel,
   type RecordCategory,
 } from "@/app/lib/records";
-import {  Record as DbRecord } from "@prisma/client";
+import { Record as DbRecord } from "@prisma/client";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 
 const unitText = (category: RecordCategory) => {
   switch (category) {
@@ -43,8 +43,6 @@ const Field = ({
 const toDateInputValue = (d: Date) => d.toISOString().slice(0, 10);
 
 export function RecordEditForm({ record }: { record: DbRecord }) {
-  const router = useRouter();
-
   const [date, setDate] = useState<string>(() => toDateInputValue(record.date));
   const [category, setCategory] = useState<RecordCategory>(record.category);
   const [title, setTitle] = useState(record.title);
@@ -53,18 +51,15 @@ export function RecordEditForm({ record }: { record: DbRecord }) {
 
   const unit = useMemo(() => unitText(category), [category]);
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    alert("저장 완료");
-    router.push(`/items/${record.id}`);
-  };
+  const isValidNumberInput = (v: string) => v === "" || /^\d*([.,]?\d*)?$/.test(v);
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form action={updateRecord} className="space-y-6">
+      <input type="hidden" name="id" value={record.id} />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Field label="날짜">
           <input
+            name="date"
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -74,6 +69,7 @@ export function RecordEditForm({ record }: { record: DbRecord }) {
 
         <Field label="카테고리">
           <select
+            name="category"
             value={category}
             onChange={(e) => setCategory(e.target.value as RecordCategory)}
             className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none focus:border-zinc-400"
@@ -88,6 +84,7 @@ export function RecordEditForm({ record }: { record: DbRecord }) {
 
       <Field label="제목" hint="예: 출근, 낮잠, 기분 체크 등">
         <input
+          name="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none focus:border-zinc-400"
@@ -98,9 +95,13 @@ export function RecordEditForm({ record }: { record: DbRecord }) {
       <Field label="수치">
         <div className="flex items-center gap-2">
           <input
+            name="value"
             inputMode="numeric"
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => {
+              const next = e.target.value;
+              if (isValidNumberInput(next)) setValue(next);
+            }}
             className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none focus:border-zinc-400"
             placeholder="숫자 입력"
           />
@@ -112,6 +113,7 @@ export function RecordEditForm({ record }: { record: DbRecord }) {
 
       <Field label="메모">
         <textarea
+          name="note"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           className="min-h-28 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400"

@@ -1,3 +1,4 @@
+import { deleteRecord } from "@/app/action";
 import { PageContainer } from "@/app/components/layout/PageContainer";
 import { TopNav } from "@/app/components/layout/TopNav";
 import { formatValueText } from "@/app/lib/format";
@@ -5,7 +6,7 @@ import { prisma } from "@/app/lib/prisma";
 import { categoryLabel } from "@/app/lib/records";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import CreatedToast from "./CreatedToast";
+import ItemsFlashToast from "../ItemFlashToast";
 
 const pillClass = (category: string) => {
     switch (category) {
@@ -37,10 +38,14 @@ const MetaCard = ({
     );
 };
 
+type SearchParams = Record<string, string | string[] | undefined>;
+
 export default async function ItemDetailPage({
     params,
+    searchParams
 }: {
     params: { id: string };
+    searchParams: SearchParams;
 }) {
     const record = await prisma.record.findUnique({
         where: { id: params.id }
@@ -53,7 +58,11 @@ export default async function ItemDetailPage({
 
     return (
         <PageContainer>
-            <CreatedToast id={params.id} />
+            <ItemsFlashToast
+                created={searchParams.created}
+                deleted={searchParams.deleted}
+                updated={searchParams.updated}
+            />
             <TopNav title="기록 상세" />
 
             <div className="px-6 pb-12 pt-6">
@@ -104,8 +113,17 @@ export default async function ItemDetailPage({
                             href={`/items/${record.id}/edit`}
                             className="rounded-lg border border-zinc-900 bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
                         >
-                            수정하기
+                            수정
                         </Link>
+                        <form action={deleteRecord}>
+                            <input type="hidden" name="id" value={record.id} />
+                            <button
+                                type="submit"
+                                className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100"
+                            >
+                                삭제
+                            </button>
+                        </form>
                         <Link
                             href="/items"
                             className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"

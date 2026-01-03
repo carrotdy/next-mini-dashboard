@@ -48,24 +48,24 @@ const ItemsPage = async ({ searchParams }: { searchParams: SearchParams }) => {
     ...(category !== "all" ? { category } : {}),
     ...(rawQ
       ? {
-          OR: [
-            { title: { contains: rawQ } },
-            { note: { contains: rawQ } },
-            ...(isYYYYMMDD(rawQ)
-              ? [
-                  {
-                    date: {
-                      gte: new Date(`${rawQ}T00:00:00.000+09:00`),
-                      lt: new Date(`${rawQ}T24:00:00.000+09:00`),
-                    },
-                  },
-                ]
-              : []),
-            ...(queryToCategory(rawQ)
-              ? [{ category: queryToCategory(rawQ)! }]
-              : []),
-          ],
-        }
+        OR: [
+          { title: { contains: rawQ } },
+          { note: { contains: rawQ } },
+          ...(isYYYYMMDD(rawQ)
+            ? [
+              {
+                date: {
+                  gte: new Date(`${rawQ}T00:00:00.000+09:00`),
+                  lt: new Date(`${rawQ}T24:00:00.000+09:00`),
+                },
+              },
+            ]
+            : []),
+          ...(queryToCategory(rawQ)
+            ? [{ category: queryToCategory(rawQ)! }]
+            : []),
+        ],
+      }
       : {}),
   };
 
@@ -107,7 +107,11 @@ const ItemsPage = async ({ searchParams }: { searchParams: SearchParams }) => {
 
   return (
     <PageContainer>
-      <ItemsFlashToast created={toSingle(searchParams.created) ?? undefined} />
+      <ItemsFlashToast
+        created={searchParams.created}
+        deleted={searchParams.deleted}
+        updated={searchParams.updated}
+      />
       <TopNav title="기록" />
 
       <div className="px-6 pb-12 pt-6">
