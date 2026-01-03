@@ -11,6 +11,8 @@ import { RecordsTable } from "../components/records/RecordsTable";
 import { formatRecordValueText } from "../lib/format";
 import { PaginationBar } from "../components/records/PaginationBar";
 import { RecordsTabs } from "../components/records/RecordsTabs";
+import ItemsFlashToast from "./ItemFlashToast";
+import Link from "next/link";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -83,6 +85,7 @@ const ItemsPage = ({ searchParams }: { searchParams: SearchParams }) => {
 
   return (
     <PageContainer>
+      <ItemsFlashToast created={toSingle(searchParams.created) ?? undefined} />
       <TopNav title="기록" />
 
       <div className="px-6 pb-12 pt-6">
@@ -96,18 +99,23 @@ const ItemsPage = ({ searchParams }: { searchParams: SearchParams }) => {
           <RecordsToolbar category={category} q={rawQ} sort={rawSort} />
         </div>
 
-        <RecordsTabs
-          active={category}
-          q={rawQ}
-          sort={rawSort}
-          counts={{
-            all: records.length,
-            steps: records.filter((r) => r.category === "steps").length,
-            sleep: records.filter((r) => r.category === "sleep").length,
-            mood: records.filter((r) => r.category === "mood").length,
-            panic: records.filter((r) => r.category === "panic").length,
-          }}
-        />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px" }}>
+          <RecordsTabs
+            active={category}
+            q={rawQ}
+            sort={rawSort}
+            counts={{
+              all: records.length,
+              steps: records.filter((r) => r.category === "steps").length,
+              sleep: records.filter((r) => r.category === "sleep").length,
+              mood: records.filter((r) => r.category === "mood").length,
+              panic: records.filter((r) => r.category === "panic").length,
+            }}
+          />
+          <Link href="/items/new" className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800">
+            작성
+          </Link>
+        </div>
 
         <div className="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white">
           <RecordsTable

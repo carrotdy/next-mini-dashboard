@@ -4,6 +4,7 @@ import { PageContainer } from "@/app/components/layout/PageContainer";
 import { TopNav } from "@/app/components/layout/TopNav";
 import { categoryLabel, records } from "@/app/lib/records";
 import { formatRecordValueText } from "@/app/lib/format";
+import CreatedToast from "./CreatedToast";
 
 const pillClass = (category: string) => {
     switch (category) {
@@ -48,6 +49,7 @@ export default function ItemDetailPage({
 
     return (
         <PageContainer>
+            <CreatedToast id={params.id} />
             <TopNav title="기록 상세" />
 
             <div className="px-6 pb-12 pt-6">

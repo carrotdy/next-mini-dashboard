@@ -24,8 +24,8 @@ export const RecentRecordsTable = ({ records }: { records: HealthRecord[] }) => 
     <section className="mt-10">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-semibold">최근 기록</h2>
-        <Link href="/items" className="text-sm text-zinc-500 hover:text-zinc-700">
-          전체보기
+        <Link href="/items/new" className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800">
+          작성
         </Link>
       </div>
 
