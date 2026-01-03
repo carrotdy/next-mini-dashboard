@@ -1,4 +1,4 @@
-import type { HealthRecord, RecordCategory } from "@/app/lib/records";
+import type { Record as DbRecord, RecordCategory } from "@prisma/client";
 
 export type DashboardKpi = {
   label: string;
@@ -7,37 +7,36 @@ export type DashboardKpi = {
   subText: string;
 };
 
-//최근 10개 기록
-const parseDateMs = (date: string) => new Date(`${date}T00:00:00`).getTime();
+const DAY_MS = 24 * 60 * 60 * 1000;
 
-export const getRecentRecords = (all: HealthRecord[], limit = 10) =>
+
+export const getRecentRecords = (all: DbRecord[], limit = 10) =>
   [...all]
-    .sort((a, b) => parseDateMs(b.date) - parseDateMs(a.date))
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
     .slice(0, limit);
 
-const parseDate = (date: string) => new Date(`${date}T00:00:00`);
+const getLatestByCategory = (all: DbRecord[], category: RecordCategory) => {
+  if (!Array.isArray(all)) return undefined;
+  
+  let latest: DbRecord | undefined;
 
-//steps, sleep 가장 최신기록
-const getLatestByCategory = (all: HealthRecord[], category: RecordCategory) =>
-  all
-    .filter((r) => r.category === category)
-    .sort((a, b) => parseDate(b.date).getTime() - parseDate(a.date).getTime())[0];
+  for (const r of all) {
+    if (r.category !== category) continue;
+    if (!latest || r.date.getTime() > latest.date.getTime()) latest = r;
+  }
 
-//mood, panic 데이터 중 최근 7일
-const getLastNDays = (all: HealthRecord[], days: number) => {
+  return latest;
+};
+
+const getLastNDays = (all: DbRecord[], days: number) => {
   if (all.length === 0) return [];
 
-  const latestMs = all
-    .map((r) => parseDate(r.date).getTime())
-    .sort((a, b) => b - a)[0];
-
-  const end = new Date(latestMs);
-  const start = new Date(end);
-  start.setDate(end.getDate() - (days - 1));
+  const endMs = all.reduce((max, r) => Math.max(max, r.date.getTime()), -Infinity);
+  const startMs = endMs - (days - 1) * DAY_MS;
 
   return all.filter((r) => {
-    const t = parseDate(r.date).getTime();
-    return t >= start.getTime() && t <= end.getTime();
+    const t = r.date.getTime();
+    return t >= startMs && t <= endMs;
   });
 };
 
@@ -47,7 +46,7 @@ const average = (nums: number[]) => {
 };
 
 export const buildDashboardKpis = (
-  records: HealthRecord[],
+  records: DbRecord[],
   days: number = 7
 ): DashboardKpi[] => {
   const latestSteps = getLatestByCategory(records, "steps")?.value ?? null;
@@ -57,6 +56,7 @@ export const buildDashboardKpis = (
     records.filter((r) => r.category === "mood"),
     days
   );
+
   const panicLastN = getLastNDays(
     records.filter((r) => r.category === "panic"),
     days

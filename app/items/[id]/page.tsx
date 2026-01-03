@@ -1,9 +1,10 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
 import { PageContainer } from "@/app/components/layout/PageContainer";
 import { TopNav } from "@/app/components/layout/TopNav";
-import { categoryLabel, records } from "@/app/lib/records";
-import { formatRecordValueText } from "@/app/lib/format";
+import { formatValueText } from "@/app/lib/format";
+import { prisma } from "@/app/lib/prisma";
+import { categoryLabel } from "@/app/lib/records";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import CreatedToast from "./CreatedToast";
 
 const pillClass = (category: string) => {
@@ -36,16 +37,19 @@ const MetaCard = ({
     );
 };
 
-export default function ItemDetailPage({
+export default async function ItemDetailPage({
     params,
 }: {
     params: { id: string };
 }) {
-    const record = records.find((r) => r.id === params.id);
+    const record = await prisma.record.findUnique({
+        where: { id: params.id }
+    });
+
     if (!record) notFound();
 
     const categoryText = categoryLabel[record.category] ?? record.category;
-    const valueText = formatRecordValueText(record);
+    const valueText = formatValueText(record.category, record.value);
 
     return (
         <PageContainer>
@@ -58,7 +62,7 @@ export default function ItemDetailPage({
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                             <div>
                                 <div className="text-xs font-medium text-zinc-500">
-                                    {record.date}
+                                    {record.date.toISOString().slice(0, 10)}
                                 </div>
                                 <div className="mt-1 text-2xl font-bold text-zinc-900">
                                     {record.title}
@@ -72,10 +76,6 @@ export default function ItemDetailPage({
                                         ].join(" ")}
                                     >
                                         {categoryText}
-                                    </span>
-
-                                    <span className="inline-flex items-center rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-semibold text-zinc-900">
-                                        {valueText}
                                     </span>
                                 </div>
                             </div>

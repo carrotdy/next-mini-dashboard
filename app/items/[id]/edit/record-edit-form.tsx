@@ -5,9 +5,9 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   categoryLabel,
-  type HealthRecord,
   type RecordCategory,
 } from "@/app/lib/records";
+import {  Record as DbRecord } from "@prisma/client";
 
 const unitText = (category: RecordCategory) => {
   switch (category) {
@@ -40,10 +40,12 @@ const Field = ({
   );
 };
 
-export function RecordEditForm({ record }: { record: HealthRecord }) {
+const toDateInputValue = (d: Date) => d.toISOString().slice(0, 10);
+
+export function RecordEditForm({ record }: { record: DbRecord }) {
   const router = useRouter();
 
-  const [date, setDate] = useState(record.date);
+  const [date, setDate] = useState<string>(() => toDateInputValue(record.date));
   const [category, setCategory] = useState<RecordCategory>(record.category);
   const [title, setTitle] = useState(record.title);
   const [value, setValue] = useState<string>(String(record.value));
@@ -108,7 +110,7 @@ export function RecordEditForm({ record }: { record: HealthRecord }) {
         </div>
       </Field>
 
-      <Field label="메모" hint="없으면 비워도 돼요">
+      <Field label="메모">
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}

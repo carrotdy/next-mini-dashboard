@@ -8,7 +8,7 @@ export const KpiCard = ({ kpi }: { kpi: DemoKpi }) => {
   return (
     <Link
       href={`/metrics/${kpi.category}`}
-      className="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      className="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition hovsser:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-4">
         <div>

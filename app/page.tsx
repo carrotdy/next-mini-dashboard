@@ -3,12 +3,16 @@ import { TopNav } from "@/app/components/layout/TopNav";
 import { KpiGrid } from "@/app/components/dashboard/KpiGrid";
 import { RecentRecordsTable } from "@/app/components/dashboard/RecentRecordsTable";
 import { buildDashboardKpis, getRecentRecords } from "@/app/features/dashboard/kpi";
-import { records } from "@/app/lib/records";
+import { prisma } from "@/app/lib/prisma";
 
-const DashboardPage = () => {
+export default async function DashboardPage() {
+  const records = await prisma.record.findMany({
+    orderBy: { date: "desc" },
+  });
+
   const kpis = buildDashboardKpis(records, 7);
   const recent10 = getRecentRecords(records, 10);
-
+  
   return (
     <PageContainer>
       <TopNav title="대시보드" />
@@ -17,5 +21,3 @@ const DashboardPage = () => {
     </PageContainer>
   );
 };
-
-export default DashboardPage;

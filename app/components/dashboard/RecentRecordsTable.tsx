@@ -1,25 +1,20 @@
-import { categoryLabel, type HealthRecord } from "@/app/lib/records";
+import { formatValueText } from "@/app/lib/format";
+import type { Record as DbRecord } from "@prisma/client";
+import { categoryLabel } from "@/app/lib/records";
 import Link from "next/link";
 
-const formatValueText = (value: HealthRecord) => {
-  switch (value.category) {
-    case 'steps':
-      return `${value.value.toLocaleString()}걸음`;
-    case 'sleep':
-      return `${value.value.toFixed(0)}시간`
-    case 'mood':
-      return `${value.value.toFixed(0)}점`
-    case 'panic':
-      return `${value.value}회`
-  }
-}
+type Props = { records: DbRecord[] };
 
-export const RecentRecordsTable = ({ records }: { records: HealthRecord[] }) => {
+const dtf = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: "Asia/Seoul",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 
-  const parseDate = (d: string) => new Date(`${d}T00:00:00`).getTime();
-  const sortedRecords = [...records].sort((a, b) => parseDate(b.date) - parseDate(a.date));
-  const recent = sortedRecords.slice(0, 10);
+const formatDate = (d: Date) => dtf.format(d);
 
+export function RecentRecordsTable({ records }: Props) {
   return (
     <section className="mt-10">
       <div className="mb-3 flex items-center justify-between">
@@ -38,28 +33,29 @@ export const RecentRecordsTable = ({ records }: { records: HealthRecord[] }) => 
           <div className="col-span-3">메모</div>
         </div>
 
-        {recent.map((r, index) => (
-          <div
-            key={r.id}
-            className="grid grid-cols-12 px-4 py-3 text-sm hover:bg-zinc-50"
-          >
-            <div className="col-span-2 text-zinc-600">{index + 1}</div>
-            <div className="col-span-2 text-zinc-600">{r.date}</div>
+        {records.map((r, index) => (
+          <Link key={r.id} href={`/items/${r.id}`}>
+            <div
+              className="grid grid-cols-12 px-4 py-3 text-sm hover:bg-zinc-50"
+            >
+              <div className="col-span-2 text-zinc-600">{index + 1}</div>
+              <div className="col-span-2 text-zinc-600">{formatDate(r.date)}</div>
 
-            <div className="col-span-2">
-              <span className="inline-flex rounded-full border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-600">
-                {categoryLabel[r.category]}
-              </span>
-            </div>
+              <div className="col-span-2">
+                <span className="inline-flex rounded-full border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-600">
+                  {categoryLabel[r.category]}
+                </span>
+              </div>
 
-            <div className="col-span-2 font-semibold text-zinc-900">
-              {formatValueText(r)}
-            </div>
+              <div className="col-span-2 font-semibold text-zinc-900">
+                {formatValueText(r.category, r.value)}
+              </div>
 
-            <div className="col-span-3 text-zinc-500">
-              {r.note ?? <span className="text-zinc-300">—</span>}
+              <div className="col-span-3 text-zinc-500">
+                {r.note ?? <span className="text-zinc-300">—</span>}
+              </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

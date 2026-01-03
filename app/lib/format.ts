@@ -1,14 +1,14 @@
-import type { HealthRecord } from "@/app/lib/records";
+import { RecordCategory } from "@prisma/client";
 
-export const formatRecordValueText = (value: HealthRecord) => {
-  switch (value.category) {
+export const formatValueText = (category: RecordCategory, value: number) => {
+  switch (category) {
     case "steps":
-      return `${value.value.toLocaleString()}걸음`;
+      return `${value.toLocaleString()}걸음`;
     case "sleep":
-      return `${value.value.toFixed(0)}시간`;
+      return `${value.toFixed(0)}시간`;
     case "mood":
-      return `${value.value.toFixed(0)}점`;
+      return `${value.toFixed(0)}점`;
     case "panic":
-      return `${value.value}회`;
+      return `${value}회`;
   }
 };

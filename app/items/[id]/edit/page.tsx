@@ -1,11 +1,14 @@
-import { notFound } from "next/navigation";
 import { PageContainer } from "@/app/components/layout/PageContainer";
 import { TopNav } from "@/app/components/layout/TopNav";
-import { records, type HealthRecord } from "@/app/lib/records";
+import { prisma } from "@/app/lib/prisma";
+import { notFound } from "next/navigation";
 import { RecordEditForm } from "./record-edit-form";
 
-export default function ItemEditPage({ params }: { params: { id: string } }) {
-  const record = records.find((r) => r.id === params.id) as HealthRecord | undefined;
+export default async function ItemEditPage({ params }: { params: { id: string } }) {
+  const record = await prisma.record.findUnique({
+    where: { id: params.id }
+  });
+  
   if (!record) notFound();
 
   return (
@@ -17,9 +20,6 @@ export default function ItemEditPage({ params }: { params: { id: string } }) {
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
               <div className="text-xl font-bold text-zinc-900">기록 수정</div>
-              <div className="mt-1 text-sm text-zinc-500">
-                카테고리/수치/메모를 수정할 수 있어요.
-              </div>
             </div>
 
             <RecordEditForm record={record} />
