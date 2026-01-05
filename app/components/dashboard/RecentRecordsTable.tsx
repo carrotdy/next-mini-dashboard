@@ -15,6 +15,14 @@ const dtf = new Intl.DateTimeFormat("sv-SE", {
 const formatDate = (d: Date) => dtf.format(d);
 
 export function RecentRecordsTable({ records }: Props) {
+  if (records.length === 0) {
+    return (
+      <div className="rounded-2xl border border-zinc-200 bg-white p-10 text-center text-sm text-zinc-500 mt-10">
+        아직 기록이 없어요.
+      </div>
+    );
+  }
+
   return (
     <section className="mt-10">
       <div className="mb-3 flex items-center justify-between">

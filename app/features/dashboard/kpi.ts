@@ -87,7 +87,7 @@ export const buildDashboardKpis = (
     {
       label: "공황",
       category: "panic",
-      valueText: `${panicCount}`,
+      valueText: moodAvg === null ? "--" : `${panicCount}`,
       subText: `발생 (${days}일)`,
     },
   ];
