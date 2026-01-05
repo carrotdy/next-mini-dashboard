@@ -1,6 +1,7 @@
 "use client";
 
 import { updateRecord } from "@/app/action";
+import { initialActionState } from "@/app/actionState";
 import {
   categoryLabel,
   type RecordCategory,
@@ -8,6 +9,7 @@ import {
 import { Record as DbRecord } from "@prisma/client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useFormState, useFormStatus } from "react-dom";
 
 const unitText = (category: RecordCategory) => {
   switch (category) {
@@ -42,7 +44,35 @@ const Field = ({
 
 const toDateInputValue = (d: Date) => d.toISOString().slice(0, 10);
 
+function SaveButton({ id }: { id: string }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+      <Link
+        href={`/items/${id}`}
+        className={[
+          "h-10 rounded-lg border border-zinc-200 bg-white px-4 text-center text-sm font-medium leading-10 text-zinc-700 hover:bg-zinc-50",
+          pending ? "pointer-events-none opacity-50" : "",
+        ].join(" ")}
+      >
+        취소
+      </Link>
+
+      <button
+        type="submit"
+        disabled={pending}
+        className="h-10 rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+      >
+        {pending ? "저장 중..." : "저장"}
+      </button>
+    </div>
+  );
+};
+
 export function RecordEditForm({ record }: { record: DbRecord }) {
+  const [state, formAction] = useFormState(updateRecord, initialActionState);
+
   const [date, setDate] = useState<string>(() => toDateInputValue(record.date));
   const [category, setCategory] = useState<RecordCategory>(record.category);
   const [title, setTitle] = useState(record.title);
@@ -54,7 +84,7 @@ export function RecordEditForm({ record }: { record: DbRecord }) {
   const isValidNumberInput = (v: string) => v === "" || /^\d*([.,]?\d*)?$/.test(v);
 
   return (
-    <form action={updateRecord} className="space-y-6">
+    <form action={formAction} className="space-y-6">
       <input type="hidden" name="id" value={record.id} />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Field label="날짜">
@@ -121,21 +151,13 @@ export function RecordEditForm({ record }: { record: DbRecord }) {
         />
       </Field>
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-        <Link
-          href={`/items/${record.id}`}
-          className="h-10 rounded-lg border border-zinc-200 bg-white px-4 text-center text-sm font-medium leading-10 text-zinc-700 hover:bg-zinc-50"
-        >
-          취소
-        </Link>
+      {state?.error && (
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          {state.error}
+        </div>
+      )}
 
-        <button
-          type="submit"
-          className="h-10 rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white hover:bg-zinc-800"
-        >
-          저장
-        </button>
-      </div>
+      <SaveButton id={record.id} />
     </form>
   );
 }

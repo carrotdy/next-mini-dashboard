@@ -3,14 +3,34 @@
 import Link from "next/link";
 import { useState } from "react";
 import { createRecord } from "@/app/action";
+import { initialActionState } from "@/app/actionState";
+import { useFormState, useFormStatus } from "react-dom";
 
 const isValidNumberInput = (v: string) => v === "" || /^\d*([.,]?\d*)?$/.test(v);
 
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+    >
+      {pending ? "저장 중..." : "저장"}
+    </button>
+  );
+}
+
 export default function NewRecordForm() {
+  const [state, action] = useFormState(createRecord, initialActionState);
+
   const [value, setValue] = useState("");
 
   return (
-    <form action={createRecord} className="rounded-2xl border border-zinc-200 bg-white p-6">
+    <form
+      action={action}
+      className="rounded-2xl border border-zinc-200 bg-white p-6"
+    >
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="grid gap-2">
           <span className="text-sm font-medium text-zinc-700">날짜</span>
@@ -61,6 +81,7 @@ export default function NewRecordForm() {
             placeholder="예) 1234"
             className="h-10 rounded-lg border border-zinc-200 px-3 text-sm"
           />
+          <div className="text-xs text-zinc-400">숫자만 입력할 수 있어요.</div>
         </label>
 
         <label className="grid gap-2 sm:col-span-2">
@@ -74,6 +95,12 @@ export default function NewRecordForm() {
         </label>
       </div>
 
+      {state?.error && (
+        <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          {state.error}
+        </div>
+      )}
+
       <div className="mt-6 flex items-center justify-end gap-2">
         <Link
           href="/items"
@@ -81,12 +108,8 @@ export default function NewRecordForm() {
         >
           취소
         </Link>
-        <button
-          type="submit"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-        >
-          저장
-        </button>
+
+        <SubmitButton />
       </div>
     </form>
   );

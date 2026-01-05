@@ -1,4 +1,3 @@
-import { deleteRecord } from "@/app/action";
 import { PageContainer } from "@/app/components/layout/PageContainer";
 import { TopNav } from "@/app/components/layout/TopNav";
 import { formatValueText } from "@/app/lib/format";
@@ -6,7 +5,8 @@ import { prisma } from "@/app/lib/prisma";
 import { categoryLabel } from "@/app/lib/records";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ItemsFlashToast from "../ItemFlashToast";
+import DeleteRecordForm from "../components/DeleteRecordForm";
+import ItemsFlashToast from "../components/ItemFlashToast";
 
 const pillClass = (category: string) => {
     switch (category) {
@@ -115,15 +115,9 @@ export default async function ItemDetailPage({
                         >
                             수정
                         </Link>
-                        <form action={deleteRecord}>
-                            <input type="hidden" name="id" value={record.id} />
-                            <button
-                                type="submit"
-                                className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100"
-                            >
-                                삭제
-                            </button>
-                        </form>
+
+                        <DeleteRecordForm id={record.id} />
+
                         <Link
                             href="/items"
                             className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"

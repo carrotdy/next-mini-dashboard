@@ -5,7 +5,7 @@ import { RecordsToolbar } from "../components/records/RecordsToolbar";
 import { RecordsTable } from "../components/records/RecordsTable";
 import { PaginationBar } from "../components/records/PaginationBar";
 import { RecordsTabs } from "../components/records/RecordsTabs";
-import ItemsFlashToast from "./ItemFlashToast";
+import ItemsFlashToast from "./components/ItemFlashToast";
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 import type { Prisma } from "@prisma/client";
