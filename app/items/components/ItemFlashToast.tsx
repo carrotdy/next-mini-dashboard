@@ -1,44 +1,38 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
-const toSingle = (v?: string | string[]) => (Array.isArray(v) ? v[0] : v);
-
-export default function ItemsFlashToast({ created, updated, deleted }: {
-  created?: string | string[];
-  updated?: string | string[];
-  deleted?: string | string[];
-}) {
+export default function ItemsFlashToast() {
   const router = useRouter();
+  const pathname = usePathname();
+  const sp = useSearchParams();
   const shown = useRef(false);
-
-  const c = toSingle(created);
-  const u = toSingle(updated);
-  const d = toSingle(deleted);
 
   useEffect(() => {
     if (shown.current) return;
 
-    if (c === "1") {
-      shown.current = true;
-      toast.success("저장 완료!");
-      router.replace("/items");
-    }
+    const created = sp.get("created");
+    const updated = sp.get("updated");
+    const deleted = sp.get("deleted");
 
-    if (u === "1") {
-      shown.current = true;
-      toast.success("수정 완료!");
-      router.replace("/items");
-    }
+    if (created !== "1" && updated !== "1" && deleted !== "1") return;
 
-    if (d === "1") {
-      shown.current = true;
-      toast.success("삭제 완료!");
-      router.replace("/items");
-    }
-  }, [c, u, d, router]);
+    shown.current = true;
+
+    if (created === "1") toast.success("저장 완료!");
+    if (updated === "1") toast.success("수정 완료!");
+    if (deleted === "1") toast.success("삭제 완료!");
+
+    const next = new URLSearchParams(sp.toString());
+    next.delete("created");
+    next.delete("updated");
+    next.delete("deleted");
+
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [sp, router, pathname]);
 
   return null;
 }

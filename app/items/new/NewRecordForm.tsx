@@ -74,6 +74,7 @@ export default function NewRecordForm() {
             required
             inputMode="decimal"
             value={value}
+            defaultValue={new Date().toISOString().slice(0, 10)} 
             onChange={(e) => {
               const next = e.target.value;
               if (isValidNumberInput(next)) setValue(next);

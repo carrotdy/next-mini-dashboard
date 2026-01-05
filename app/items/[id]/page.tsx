@@ -56,13 +56,17 @@ export default async function ItemDetailPage({
     const categoryText = categoryLabel[record.category] ?? record.category;
     const valueText = formatValueText(record.category, record.value);
 
+    const dtf = new Intl.DateTimeFormat("sv-SE", {
+        timeZone: "Asia/Seoul",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    });
+    const formatDate = (d: Date) => dtf.format(d);
+
     return (
         <PageContainer>
-            <ItemsFlashToast
-                created={searchParams.created}
-                deleted={searchParams.deleted}
-                updated={searchParams.updated}
-            />
+            <ItemsFlashToast />
             <TopNav title="기록 상세" />
 
             <div className="px-6 pb-12 pt-6">
@@ -71,7 +75,7 @@ export default async function ItemDetailPage({
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                             <div>
                                 <div className="text-xs font-medium text-zinc-500">
-                                    {record.date.toISOString().slice(0, 10)}
+                                    {formatDate(record.date)}
                                 </div>
                                 <div className="mt-1 text-2xl font-bold text-zinc-900">
                                     {record.title}

@@ -44,33 +44,37 @@ const ItemsPage = async ({ searchParams }: { searchParams: SearchParams }) => {
   const pageSize = 10;
   const page = Math.max(1, Number(rawPage) || 1);
 
-  const where: Prisma.RecordWhereInput = {
-    ...(category !== "all" ? { category } : {}),
-    ...(rawQ
-      ? {
-        OR: [
-          { title: { contains: rawQ } },
-          { note: { contains: rawQ } },
-          ...(isYYYYMMDD(rawQ)
-            ? [
-              {
-                date: {
-                  gte: new Date(`${rawQ}T00:00:00.000+09:00`),
-                  lt: new Date(`${rawQ}T24:00:00.000+09:00`),
-                },
-              },
-            ]
-            : []),
-          ...(queryToCategory(rawQ)
-            ? [{ category: queryToCategory(rawQ)! }]
-            : []),
-        ],
-      }
-      : {}),
-  };
+  const qCategory = queryToCategory(rawQ);
 
-  const orderBy: Prisma.RecordOrderByWithRelationInput =
-    rawSort === "oldest" ? { date: "asc" } : { date: "desc" };
+  const qOr: Prisma.RecordWhereInput[] = rawQ
+    ? [
+      { title: { contains: rawQ } },
+      { note: { contains: rawQ } },
+      ...(isYYYYMMDD(rawQ)
+        ? (() => {
+          const start = new Date(`${rawQ}T00:00:00.000+09:00`);
+          const end = new Date(start);
+          end.setDate(end.getDate() + 1);
+          return [{ date: { gte: start, lt: end } }];
+        })()
+        : []),
+      ...(qCategory ? [{ category: qCategory }] : []),
+    ]
+    : [];
+
+  const qWhere: Prisma.RecordWhereInput = rawQ ? { OR: qOr } : {};
+
+  const where: Prisma.RecordWhereInput =
+    category === "all" ? qWhere : { AND: [{ category }, qWhere] };
+
+  const sortOrder: Prisma.SortOrder = rawSort === "oldest" ? "asc" : "desc";
+
+  const orderBy: Prisma.RecordOrderByWithRelationInput[] = [
+    { date: sortOrder },
+    { createdAt: sortOrder },
+    { id: sortOrder },
+  ];
+
 
   const total = await prisma.record.count({ where });
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -85,6 +89,7 @@ const ItemsPage = async ({ searchParams }: { searchParams: SearchParams }) => {
 
   const grouped = await prisma.record.groupBy({
     by: ["category"],
+    where: qWhere,
     _count: { _all: true },
   });
 
@@ -107,11 +112,7 @@ const ItemsPage = async ({ searchParams }: { searchParams: SearchParams }) => {
 
   return (
     <PageContainer>
-      <ItemsFlashToast
-        created={searchParams.created}
-        deleted={searchParams.deleted}
-        updated={searchParams.updated}
-      />
+      <ItemsFlashToast />
       <TopNav title="기록" />
 
       <div className="px-6 pb-12 pt-6">
