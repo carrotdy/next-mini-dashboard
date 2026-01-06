@@ -21,5 +21,27 @@
 ## Getting Started (Local)
 
 ### 1) Install
-```bash
+~~~bash
 pnpm install
+~~~
+
+### 2) Environment Variables
+~~~bash
+# mac/linux
+cp .env.example .env
+
+# windows (powershell)
+copy .env.example .env
+~~~
+
+### 3) Prisma (DB 반영)
+~~~bash
+pnpm prisma migrate dev
+pnpm prisma generate
+~~~
+
+### 4) Run
+~~~bash
+pnpm dev
+~~~
+
