@@ -40,3 +40,5 @@ next-env.d.ts
 /app/generated/prisma
 
 .vercel
+
+!.env.example
