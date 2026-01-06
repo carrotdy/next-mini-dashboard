@@ -38,14 +38,10 @@ const MetaCard = ({
     );
 };
 
-type SearchParams = Record<string, string | string[] | undefined>;
-
 export default async function ItemDetailPage({
-    params,
-    searchParams
+    params
 }: {
     params: { id: string };
-    searchParams: SearchParams;
 }) {
     const record = await prisma.record.findUnique({
         where: { id: params.id }
