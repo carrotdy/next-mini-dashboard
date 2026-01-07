@@ -22,7 +22,7 @@
 
 ### 1) Install
 ~~~bash
-pnpm install
+npm install
 ~~~
 
 ### 2) Environment Variables
@@ -36,12 +36,12 @@ copy .env.example .env
 
 ### 3) Prisma (DB 반영)
 ~~~bash
-pnpm prisma migrate dev
-pnpm prisma generate
+npx prisma migrate dev
+npx prisma generate
 ~~~
 
 ### 4) Run
 ~~~bash
-pnpm dev
+npm run dev
 ~~~
 
